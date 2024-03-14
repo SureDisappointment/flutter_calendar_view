@@ -21,7 +21,7 @@ class MonthView<T extends Object?> extends StatefulWidget {
   /// each cell in month calendar.
   final CellBuilder<T>? cellBuilder;
 
-  final Widget Function(Widget)? cellWrapper;
+  final Widget Function(Widget)? bodyWrapper;
 
   /// Builds month page title.
   ///
@@ -155,7 +155,7 @@ class MonthView<T extends Object?> extends StatefulWidget {
     this.showBorder = true,
     this.borderColor = Constants.defaultBorderColor,
     this.cellBuilder,
-    this.cellWrapper,
+    this.bodyWrapper,
     this.minMonth,
     this.maxMonth,
     this.controller,
@@ -209,7 +209,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
 
   late CellBuilder<T> _cellBuilder;
 
-  late Widget Function(Widget) _cellWrapper;
+  late Widget Function(Widget) _bodyWrapper;
 
   late WeekDayBuilder _weekBuilder;
 
@@ -342,7 +342,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                           return SizedBox(
                             height: _height,
                             width: _width,
-                            child: _cellWrapper(
+                            child: _bodyWrapper(
                               _MonthPageBuilder<T>(
                                 key: ValueKey(date.toIso8601String()),
                                 onCellTap: widget.onCellTap,
@@ -409,7 +409,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
     // Initialize cell builder. Assign default if widget.cellBuilder is null.
     _cellBuilder = widget.cellBuilder ?? _defaultCellBuilder;
 
-    _cellWrapper = widget.cellWrapper ?? (Widget w) => w;
+    _bodyWrapper = widget.bodyWrapper ?? (Widget w) => w;
 
     // Initialize week builder. Assign default if widget.weekBuilder is null.
     // This widget will come under header this will display week days.
