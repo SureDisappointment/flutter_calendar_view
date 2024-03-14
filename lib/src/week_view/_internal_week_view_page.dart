@@ -27,6 +27,9 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
   /// Builds tile for a single event.
   final EventTileBuilder<T> eventTileBuilder;
 
+  final Widget Function(Widget) bodyWrapper;
+  final Widget Function(Widget) titleWrapper;
+
   /// A calendar controller that controls all the events and rebuilds widget
   /// if event(s) are added or removed.
   final EventController<T> controller;
@@ -142,6 +145,8 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
       required this.weekTitleHeight,
       required this.weekDayBuilder,
       required this.weekNumberBuilder,
+      required this.bodyWrapper,
+      required this.titleWrapper,
       required this.width,
       required this.dates,
       required this.eventTileBuilder,
@@ -184,31 +189,32 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
       height: height + weekTitleHeight,
       width: width,
       child: Column(
-        verticalDirection:
-            showWeekDayAtBottom ? VerticalDirection.up : VerticalDirection.down,
+        verticalDirection: showWeekDayAtBottom ? VerticalDirection.up : VerticalDirection.down,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           SizedBox(
             width: width,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: weekTitleHeight,
-                  width: timeLineWidth + hourIndicatorSettings.offset,
-                  child: weekNumberBuilder.call(filteredDates[0]),
-                ),
-                ...List.generate(
-                  filteredDates.length,
-                  (index) => SizedBox(
+            child: titleWrapper(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
                     height: weekTitleHeight,
-                    width: weekTitleWidth,
-                    child: weekDayBuilder(
-                      filteredDates[index],
-                    ),
+                    width: timeLineWidth + hourIndicatorSettings.offset,
+                    child: weekNumberBuilder.call(filteredDates[0]),
                   ),
-                )
-              ],
+                  ...List.generate(
+                    filteredDates.length,
+                    (index) => SizedBox(
+                      height: weekTitleHeight,
+                      width: weekTitleWidth,
+                      child: weekDayBuilder(
+                        filteredDates[index],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           Divider(
@@ -224,8 +230,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
                 ...List.generate(
                   filteredDates.length,
                   (index) {
-                    final fullDayEventList =
-                        controller.getFullDayEvent(filteredDates[index]);
+                    final fullDayEventList = controller.getFullDayEvent(filteredDates[index]);
                     return fullDayEventList.isEmpty
                         ? SizedBox.shrink()
                         : SizedBox(
@@ -241,129 +246,126 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: SizedBox(
-                height: height,
-                width: width,
-                child: Stack(
-                  children: [
-                    CustomPaint(
-                        size: Size(width, height),
-                        painter: HourLinePainter(
-                            lineColor: hourIndicatorSettings.color,
-                            lineHeight: hourIndicatorSettings.height,
-                            offset:
-                                timeLineWidth + hourIndicatorSettings.offset,
-                            minuteHeight: heightPerMinute,
-                            verticalLineOffset: verticalLineOffset,
-                            showVerticalLine: showVerticalLine,
-                            startHour: startHour,
-                            emulateVerticalOffsetBy: emulateVerticalOffsetBy)),
-                    if (showHalfHours)
+            child: bodyWrapper(
+              SingleChildScrollView(
+                controller: scrollController,
+                child: SizedBox(
+                  height: height,
+                  width: width,
+                  child: Stack(
+                    children: [
                       CustomPaint(
-                        size: Size(width, height),
-                        painter: HalfHourLinePainter(
-                            lineColor: halfHourIndicatorSettings.color,
-                            lineHeight: halfHourIndicatorSettings.height,
-                            offset: timeLineWidth +
-                                halfHourIndicatorSettings.offset,
-                            minuteHeight: heightPerMinute,
-                            lineStyle: halfHourIndicatorSettings.lineStyle,
-                            dashWidth: halfHourIndicatorSettings.dashWidth,
-                            dashSpaceWidth:
-                                halfHourIndicatorSettings.dashSpaceWidth,
-                            startHour: halfHourIndicatorSettings.startHour),
-                      ),
-                    if (showQuarterHours)
-                      CustomPaint(
-                        size: Size(width, height),
-                        painter: QuarterHourLinePainter(
-                          lineColor: quarterHourIndicatorSettings.color,
-                          lineHeight: quarterHourIndicatorSettings.height,
-                          offset: timeLineWidth +
-                              quarterHourIndicatorSettings.offset,
-                          minuteHeight: heightPerMinute,
-                          lineStyle: quarterHourIndicatorSettings.lineStyle,
-                          dashWidth: quarterHourIndicatorSettings.dashWidth,
-                          dashSpaceWidth:
-                              quarterHourIndicatorSettings.dashSpaceWidth,
+                          size: Size(width, height),
+                          painter: HourLinePainter(
+                              lineColor: hourIndicatorSettings.color,
+                              lineHeight: hourIndicatorSettings.height,
+                              offset: timeLineWidth + hourIndicatorSettings.offset,
+                              minuteHeight: heightPerMinute,
+                              verticalLineOffset: verticalLineOffset,
+                              showVerticalLine: showVerticalLine,
+                              startHour: startHour,
+                              emulateVerticalOffsetBy: emulateVerticalOffsetBy)),
+                      if (showHalfHours)
+                        CustomPaint(
+                          size: Size(width, height),
+                          painter: HalfHourLinePainter(
+                              lineColor: halfHourIndicatorSettings.color,
+                              lineHeight: halfHourIndicatorSettings.height,
+                              offset: timeLineWidth + halfHourIndicatorSettings.offset,
+                              minuteHeight: heightPerMinute,
+                              lineStyle: halfHourIndicatorSettings.lineStyle,
+                              dashWidth: halfHourIndicatorSettings.dashWidth,
+                              dashSpaceWidth: halfHourIndicatorSettings.dashSpaceWidth,
+                              startHour: halfHourIndicatorSettings.startHour),
                         ),
-                      ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: weekTitleWidth * filteredDates.length,
-                        height: height,
-                        child: Row(
-                          children: [
-                            ...List.generate(
-                              filteredDates.length,
-                              (index) => Container(
-                                decoration: showVerticalLine
-                                    ? BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: hourIndicatorSettings.color,
-                                            width: hourIndicatorSettings.height,
+                      if (showQuarterHours)
+                        CustomPaint(
+                          size: Size(width, height),
+                          painter: QuarterHourLinePainter(
+                            lineColor: quarterHourIndicatorSettings.color,
+                            lineHeight: quarterHourIndicatorSettings.height,
+                            offset: timeLineWidth + quarterHourIndicatorSettings.offset,
+                            minuteHeight: heightPerMinute,
+                            lineStyle: quarterHourIndicatorSettings.lineStyle,
+                            dashWidth: quarterHourIndicatorSettings.dashWidth,
+                            dashSpaceWidth: quarterHourIndicatorSettings.dashSpaceWidth,
+                          ),
+                        ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          width: weekTitleWidth * filteredDates.length,
+                          height: height,
+                          child: Row(
+                            children: [
+                              ...List.generate(
+                                filteredDates.length,
+                                (index) => Container(
+                                  decoration: showVerticalLine
+                                      ? BoxDecoration(
+                                          border: Border(
+                                            right: BorderSide(
+                                              color: hourIndicatorSettings.color,
+                                              width: hourIndicatorSettings.height,
+                                            ),
                                           ),
-                                        ),
-                                      )
-                                    : null,
-                                height: height,
-                                width: weekTitleWidth,
-                                child: Stack(
-                                  children: [
-                                    weekDetectorBuilder(
-                                      width: weekTitleWidth,
-                                      height: height,
-                                      heightPerMinute: heightPerMinute,
-                                      date: dates[index],
-                                      minuteSlotSize: minuteSlotSize,
-                                    ),
-                                    EventGenerator<T>(
-                                      height: height,
-                                      date: filteredDates[index],
-                                      onTileTap: onTileTap,
-                                      width: weekTitleWidth,
-                                      eventArranger: eventArranger,
-                                      eventTileBuilder: eventTileBuilder,
-                                      scrollNotifier: scrollConfiguration,
-                                      startHour: startHour,
-                                      events: controller.getEventsOnDay(
-                                        filteredDates[index],
-                                        includeFullDayEvents: false,
+                                        )
+                                      : null,
+                                  height: height,
+                                  width: weekTitleWidth,
+                                  child: Stack(
+                                    children: [
+                                      weekDetectorBuilder(
+                                        width: weekTitleWidth,
+                                        height: height,
+                                        heightPerMinute: heightPerMinute,
+                                        date: dates[index],
+                                        minuteSlotSize: minuteSlotSize,
                                       ),
-                                      heightPerMinute: heightPerMinute,
-                                    ),
-                                  ],
+                                      EventGenerator<T>(
+                                        height: height,
+                                        date: filteredDates[index],
+                                        onTileTap: onTileTap,
+                                        width: weekTitleWidth,
+                                        eventArranger: eventArranger,
+                                        eventTileBuilder: eventTileBuilder,
+                                        scrollNotifier: scrollConfiguration,
+                                        startHour: startHour,
+                                        events: controller.getEventsOnDay(
+                                          filteredDates[index],
+                                          includeFullDayEvents: false,
+                                        ),
+                                        heightPerMinute: heightPerMinute,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                          ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    TimeLine(
-                      timeLineWidth: timeLineWidth,
-                      hourHeight: hourHeight,
-                      height: height,
-                      timeLineOffset: timeLineOffset,
-                      timeLineBuilder: timeLineBuilder,
-                      startHour: startHour,
-                      showHalfHours: showHalfHours,
-                      showQuarterHours: showQuarterHours,
-                      liveTimeIndicatorSettings: liveTimeIndicatorSettings,
-                    ),
-                    if (showLiveLine && liveTimeIndicatorSettings.height > 0)
-                      LiveTimeIndicator(
-                        liveTimeIndicatorSettings: liveTimeIndicatorSettings,
-                        width: width,
-                        height: height,
-                        heightPerMinute: heightPerMinute,
+                      TimeLine(
                         timeLineWidth: timeLineWidth,
+                        hourHeight: hourHeight,
+                        height: height,
+                        timeLineOffset: timeLineOffset,
+                        timeLineBuilder: timeLineBuilder,
+                        startHour: startHour,
+                        showHalfHours: showHalfHours,
+                        showQuarterHours: showQuarterHours,
+                        liveTimeIndicatorSettings: liveTimeIndicatorSettings,
                       ),
-                  ],
+                      if (showLiveLine && liveTimeIndicatorSettings.height > 0)
+                        LiveTimeIndicator(
+                          liveTimeIndicatorSettings: liveTimeIndicatorSettings,
+                          width: width,
+                          height: height,
+                          heightPerMinute: heightPerMinute,
+                          timeLineWidth: timeLineWidth,
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),

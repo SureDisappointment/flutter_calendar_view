@@ -332,18 +332,18 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                         ),
                       ),
                       Expanded(
-                        child: LayoutBuilder(builder: (context, constraints) {
-                          final _cellAspectRatio = widget.useAvailableVerticalSpace
-                              ? calculateCellAspectRatio(
-                                  constraints.maxHeight,
-                                )
-                              : widget.cellAspectRatio;
+                        child: _bodyWrapper(
+                          LayoutBuilder(builder: (context, constraints) {
+                            final _cellAspectRatio = widget.useAvailableVerticalSpace
+                                ? calculateCellAspectRatio(
+                                    constraints.maxHeight,
+                                  )
+                                : widget.cellAspectRatio;
 
-                          return SizedBox(
-                            height: _height,
-                            width: _width,
-                            child: _bodyWrapper(
-                              _MonthPageBuilder<T>(
+                            return SizedBox(
+                              height: _height,
+                              width: _width,
+                              child: _MonthPageBuilder<T>(
                                 key: ValueKey(date.toIso8601String()),
                                 onCellTap: widget.onCellTap,
                                 onDateLongPress: widget.onDateLongPress,
@@ -359,9 +359,9 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                                 startDay: widget.startDay,
                                 physics: widget.pagePhysics,
                               ),
-                            ),
-                          );
-                        }),
+                            );
+                          }),
+                        ),
                       ),
                     ],
                   );
