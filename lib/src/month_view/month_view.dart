@@ -337,6 +337,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                             final _cellAspectRatio = widget.useAvailableVerticalSpace
                                 ? calculateCellAspectRatio(
                                     constraints.maxHeight,
+                                    constraints.maxWidth,
                                   )
                                 : widget.cellAspectRatio;
 
@@ -400,8 +401,9 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
     _height = _cellHeight * 6;
   }
 
-  double calculateCellAspectRatio(double height) {
+  double calculateCellAspectRatio(double height, [double? width]) {
     final _cellHeight = height / 6;
+    final _cellWidth = width != null ? width / 7 : _width / 7;
     return _cellWidth / _cellHeight;
   }
 
