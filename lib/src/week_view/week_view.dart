@@ -435,7 +435,7 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
         _width = (widget.width ?? constraint.maxWidth) - widget.padding.horizontal;
         _updateViewDimensions();
         return SizedBox(
-          width: _width,
+          width: _width + widget.padding.horizontal,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -449,7 +449,7 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
                   decoration: BoxDecoration(color: widget.backgroundColor),
                   child: SizedBox(
                     height: _height,
-                    width: _width,
+                    width: _width + widget.padding.horizontal,
                     child: PageView.builder(
                       itemCount: _totalWeeks,
                       controller: _pageController,
