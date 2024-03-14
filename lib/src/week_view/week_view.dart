@@ -434,34 +434,34 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
       child: LayoutBuilder(builder: (context, constraint) {
         _width = (widget.width ?? constraint.maxWidth) - widget.padding.horizontal;
         _updateViewDimensions();
-        return Padding(
-          padding: widget.padding,
-          child: SizedBox(
-            width: _width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _weekHeaderBuilder(
-                  _currentStartDate,
-                  _currentEndDate,
-                ),
-                Expanded(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(color: widget.backgroundColor),
-                    child: SizedBox(
-                      height: _height,
-                      width: _width,
-                      child: PageView.builder(
-                        itemCount: _totalWeeks,
-                        controller: _pageController,
-                        onPageChanged: _onPageChange,
-                        itemBuilder: (_, index) {
-                          final dates =
-                              DateTime(_minDate.year, _minDate.month, _minDate.day + (index * DateTime.daysPerWeek))
-                                  .datesOfWeek(start: widget.startDay);
+        return SizedBox(
+          width: _width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _weekHeaderBuilder(
+                _currentStartDate,
+                _currentEndDate,
+              ),
+              Expanded(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: widget.backgroundColor),
+                  child: SizedBox(
+                    height: _height,
+                    width: _width,
+                    child: PageView.builder(
+                      itemCount: _totalWeeks,
+                      controller: _pageController,
+                      onPageChanged: _onPageChange,
+                      itemBuilder: (_, index) {
+                        final dates =
+                            DateTime(_minDate.year, _minDate.month, _minDate.day + (index * DateTime.daysPerWeek))
+                                .datesOfWeek(start: widget.startDay);
 
-                          return ValueListenableBuilder(
+                        return Padding(
+                          padding: widget.padding,
+                          child: ValueListenableBuilder(
                             valueListenable: _scrollConfiguration,
                             builder: (_, __, ___) => InternalWeekViewPage<T>(
                               key: ValueKey(_hourHeight.toString() + dates[0].toString()),
@@ -505,14 +505,14 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
                               emulateVerticalOffsetBy: widget.emulateVerticalOffsetBy,
                               showWeekDayAtBottom: widget.showWeekDayAtBottom,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       }),
