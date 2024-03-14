@@ -29,6 +29,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
 
   final Widget Function(Widget) bodyWrapper;
   final Widget Function(Widget) titleWrapper;
+  final Widget divider;
 
   /// A calendar controller that controls all the events and rebuilds widget
   /// if event(s) are added or removed.
@@ -147,6 +148,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
       required this.weekNumberBuilder,
       required this.bodyWrapper,
       required this.titleWrapper,
+      required this.divider,
       required this.width,
       required this.dates,
       required this.eventTileBuilder,
@@ -217,10 +219,7 @@ class InternalWeekViewPage<T extends Object?> extends StatelessWidget {
               ),
             ),
           ),
-          Divider(
-            thickness: 1,
-            height: 1,
-          ),
+          divider,
           SizedBox(
             width: width,
             child: Row(

@@ -33,8 +33,8 @@ class WeekView<T extends Object?> extends StatefulWidget {
   final WeekPageHeaderBuilder? weekPageHeaderBuilder;
 
   final Widget Function(Widget)? bodyWrapper;
-
   final Widget Function(Widget)? titleWrapper;
+  final Widget? divider;
 
   /// Builds custom PressDetector widget
   ///
@@ -229,6 +229,7 @@ class WeekView<T extends Object?> extends StatefulWidget {
     this.eventTileBuilder,
     this.bodyWrapper,
     this.titleWrapper,
+    this.divider,
     this.pageTransitionDuration = const Duration(milliseconds: 300),
     this.pageTransitionCurve = Curves.ease,
     this.heightPerMinute = 1,
@@ -327,6 +328,7 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
 
   late Widget Function(Widget) _bodyWrapper;
   late Widget Function(Widget) _titleWrapper;
+  late Widget _divider;
 
   late double _weekTitleWidth;
   late int _totalDaysInWeek;
@@ -471,6 +473,7 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
                               weekTitleHeight: widget.weekTitleHeight,
                               bodyWrapper: _bodyWrapper,
                               titleWrapper: _titleWrapper,
+                              divider: _divider,
                               weekDayBuilder: _weekDayBuilder,
                               weekNumberBuilder: _weekNumberBuilder,
                               weekDetectorBuilder: _weekDetectorBuilder,
@@ -615,6 +618,11 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
 
     _bodyWrapper = widget.bodyWrapper ?? (Widget w) => w;
     _titleWrapper = widget.titleWrapper ?? (Widget w) => w;
+    _divider = widget.divider ??
+        Divider(
+          thickness: 1,
+          height: 1,
+        );
   }
 
   Widget _defaultFullDayEventBuilder(List<CalendarEventData<T>> events, DateTime dateTime) {
